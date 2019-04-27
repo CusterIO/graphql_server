@@ -1,38 +1,26 @@
 const { GraphQLServer } = require('graphql-yoga')
+const { prisma } = require('../prisma/src/generated/prisma-client')
+const Query = require('./resolvers/Query')
+const Mutation = require('./resolvers/Mutation')
+const User = require('./resolvers/User')
+const Link = require('./resolvers/Link')
 
-// Schema
-// Every GraphQL schema has three special root types, these are called Query, Mutation and Subscription.
-
-let links = [{
-  id: 'link-0',
-  url: 'www.expressen.se',
-  description: 'Swedish newspaper'
-}]
-
-let idCount = links.length
-
-// Implementation of schema
 const resolvers = {
-  Query: {
-    info: () => `This is the API of a GraphQL server`,
-    feed: () => links
-  },
-  Mutation: {
-    post: (parent, args) => {
-      const Link = {
-        id: `link-${idCount++}`,
-        description: args.description,
-        url: args.url,
-      }
-      links.push(Link);
-      return Link
-    }
-  }
+  Query,
+  Mutation,
+  User,
+  Link
 }
-// Input the API operations which are accepted and how they should be resolved
+
 const server = new GraphQLServer({
   typeDefs: 'src/schema.graphql',
   resolvers,
+  context: request => {
+    return {
+      ...request,
+      prisma
+    }
+  }
 })
 
 server.start(() => console.log(`Server is running on http://localhost:4000`))
