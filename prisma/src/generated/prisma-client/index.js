@@ -15,11 +15,15 @@ var models = [
   {
     name: "Vote",
     embedded: false
+  },
+  {
+    name: "Article",
+    embedded: false
   }
 ];
 exports.Prisma = prisma_lib_1.makePrismaClientClass({
   typeDefs,
   models,
-  endpoint: `https://eu1.prisma.sh/custerapp/graphql-server/dev`
+  endpoint: `https://eu1.prisma.sh/custerapp/graphql-server/dev2`
 });
 exports.prisma = new exports.Prisma();

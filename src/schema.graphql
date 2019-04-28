@@ -1,22 +1,40 @@
 type Query {
-  info: String!
-  feed(filter: String, skip: Int, first: Int, orderBy: LinkOrderByInput): Feed!
+  feedArticles(filter: String, skip: Int, first: Int, orderBy: ArticleOrderByInput): FeedArticles!
+  feedLinks(filter: String, skip: Int, first: Int, orderBy: LinkOrderByInput): FeedLinks!
 }
 
-type Feed {
+type FeedArticles {
+  articles: [Article!]!
+  count: Int!
+}
+
+type FeedLinks {
   links: [Link!]!
   count: Int!
 }
 
 type Mutation {
-  post(url: String!, description: String!): Link!
+  postLink(url: String!, description: String!): Link!
+  postArticle(description: String!, author: String!, topic: String!, title: String!): Article!
   signup(email: String!, password: String!, name: String!): AuthPayload
   login(email: String!, password: String!): AuthPayload
   vote(linkId: ID!): Vote
 }
 
+type Article {
+  id: ID!
+  title: String!
+  author: String!
+  description: String!
+  topic: String!
+  createdAt: DateTime!
+  postedBy: User
+  votes: [Vote!]!
+}
+
 type Link {
   id: ID!
+  createdAt: DateTime!
   description: String!
   url: String!
   postedBy: User
@@ -33,6 +51,7 @@ type User {
   name: String!
   email: String!
   links: [Link!]!
+  articles: [Article!]!
 }
 
 type Subscription {
@@ -44,6 +63,7 @@ type Vote {
   id: ID!
   link: Link!
   user: User!
+  article: Article!
 }
 
 enum LinkOrderByInput {
@@ -53,4 +73,19 @@ enum LinkOrderByInput {
   url_DESC
   createdAt_ASC
   createdAt_DESC
+}
+
+enum ArticleOrderByInput {
+  description_ASC
+  description_DESC
+  url_ASC
+  url_DESC
+  createdAt_ASC
+  createdAt_DESC
+  title_ASC
+  title_DESC
+  author_ASC
+  author_DESC
+  topic_ASC
+  topic_DESC
 }

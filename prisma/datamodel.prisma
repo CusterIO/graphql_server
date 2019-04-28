@@ -14,10 +14,23 @@ type User {
   password: String!
   links: [Link!]!
   votes: [Vote!]!
+  articles: [Article!]!
 }
 
 type Vote {
   id: ID! @id
   link: Link!
   user: User!
+  article: Article!
+}
+
+type Article {
+  id: ID! @id
+  title: String!
+  author: String!
+  description: String!
+  topic: String!
+  createdAt: DateTime! @createdAt
+  postedBy: User
+  votes: [Vote!]!
 }

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const {APP_SECRET} = require('../config/config.js')
 
-function getUserId(context) {
+function getUserId (context) {
   const Authorization = context.request.get('Authorization')
   if (Authorization) {
     const token = Authorization.replace('Bearer ', '')

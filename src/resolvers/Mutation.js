@@ -34,13 +34,42 @@ async function login (parent, args, context, info) {
   }
 }
 
-function post (parent, args, context, info) {
+function postLink (parent, args, context, info) {
   const userId = getUserId(context)
 
   return context.prisma.createLink({
     url: args.url,
     description: args.description,
     postedBy: { connect: { id: userId } },
+  })
+}
+
+function postArticle (parent, args, context, info) {
+  const userId = getUserId(context)
+
+  return context.prisma.createArticle({
+    author: args.author,
+    description: args.description,
+    topic: args.topic,
+    title: args.title,
+    postedBy: { connect: { id: userId } },
+  })
+}
+
+async function voteArticle (parent, args, context, info) {
+  const userId = getUserId(context)
+  const articleExists = await context.prisma.$exists.vote({
+    user: { id: userId },
+    article: { id: args.articleId },
+  })
+
+  if (articleExists) {
+    throw new Error(`Already voted for link: ${args.articleId}`)
+  }
+
+  return context.prisma.createVote({
+    user: { connect: { id: userId } },
+    article: { connect: { id: args.articleId } },
   })
 }
 
@@ -64,6 +93,8 @@ async function vote (parent, args, context, info) {
 module.exports = {
   signup,
   login,
-  post,
-  vote
+  postLink,
+  postArticle,
+  vote,
+  voteArticle
 }
