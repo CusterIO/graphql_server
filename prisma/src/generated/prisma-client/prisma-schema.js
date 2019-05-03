@@ -19,6 +19,10 @@ type AggregateVote {
   count: Int!
 }
 
+type AggregateVoteArticle {
+  count: Int!
+}
+
 type Article {
   id: ID!
   title: String!
@@ -27,7 +31,7 @@ type Article {
   topic: String!
   createdAt: DateTime!
   postedBy: User
-  votes(where: VoteWhereInput, orderBy: VoteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Vote!]
+  votes(where: VoteArticleWhereInput, orderBy: VoteArticleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [VoteArticle!]
 }
 
 type ArticleConnection {
@@ -43,7 +47,7 @@ input ArticleCreateInput {
   description: String!
   topic: String!
   postedBy: UserCreateOneWithoutArticlesInput
-  votes: VoteCreateManyWithoutArticleInput
+  votes: VoteArticleCreateManyWithoutArticleInput
 }
 
 input ArticleCreateManyWithoutPostedByInput {
@@ -62,7 +66,7 @@ input ArticleCreateWithoutPostedByInput {
   author: String!
   description: String!
   topic: String!
-  votes: VoteCreateManyWithoutArticleInput
+  votes: VoteArticleCreateManyWithoutArticleInput
 }
 
 input ArticleCreateWithoutVotesInput {
@@ -211,7 +215,7 @@ input ArticleUpdateInput {
   description: String
   topic: String
   postedBy: UserUpdateOneWithoutArticlesInput
-  votes: VoteUpdateManyWithoutArticleInput
+  votes: VoteArticleUpdateManyWithoutArticleInput
 }
 
 input ArticleUpdateManyDataInput {
@@ -257,7 +261,7 @@ input ArticleUpdateWithoutPostedByDataInput {
   author: String
   description: String
   topic: String
-  votes: VoteUpdateManyWithoutArticleInput
+  votes: VoteArticleUpdateManyWithoutArticleInput
 }
 
 input ArticleUpdateWithoutVotesDataInput {
@@ -364,9 +368,9 @@ input ArticleWhereInput {
   createdAt_gt: DateTime
   createdAt_gte: DateTime
   postedBy: UserWhereInput
-  votes_every: VoteWhereInput
-  votes_some: VoteWhereInput
-  votes_none: VoteWhereInput
+  votes_every: VoteArticleWhereInput
+  votes_some: VoteArticleWhereInput
+  votes_none: VoteArticleWhereInput
   AND: [ArticleWhereInput!]
   OR: [ArticleWhereInput!]
   NOT: [ArticleWhereInput!]
@@ -685,6 +689,11 @@ type Mutation {
   upsertVote(where: VoteWhereUniqueInput!, create: VoteCreateInput!, update: VoteUpdateInput!): Vote!
   deleteVote(where: VoteWhereUniqueInput!): Vote
   deleteManyVotes(where: VoteWhereInput): BatchPayload!
+  createVoteArticle(data: VoteArticleCreateInput!): VoteArticle!
+  updateVoteArticle(data: VoteArticleUpdateInput!, where: VoteArticleWhereUniqueInput!): VoteArticle
+  upsertVoteArticle(where: VoteArticleWhereUniqueInput!, create: VoteArticleCreateInput!, update: VoteArticleUpdateInput!): VoteArticle!
+  deleteVoteArticle(where: VoteArticleWhereUniqueInput!): VoteArticle
+  deleteManyVoteArticles(where: VoteArticleWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -717,6 +726,9 @@ type Query {
   vote(where: VoteWhereUniqueInput!): Vote
   votes(where: VoteWhereInput, orderBy: VoteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Vote]!
   votesConnection(where: VoteWhereInput, orderBy: VoteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): VoteConnection!
+  voteArticle(where: VoteArticleWhereUniqueInput!): VoteArticle
+  voteArticles(where: VoteArticleWhereInput, orderBy: VoteArticleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [VoteArticle]!
+  voteArticlesConnection(where: VoteArticleWhereInput, orderBy: VoteArticleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): VoteArticleConnection!
   node(id: ID!): Node
 }
 
@@ -725,6 +737,7 @@ type Subscription {
   link(where: LinkSubscriptionWhereInput): LinkSubscriptionPayload
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   vote(where: VoteSubscriptionWhereInput): VoteSubscriptionPayload
+  voteArticle(where: VoteArticleSubscriptionWhereInput): VoteArticleSubscriptionPayload
 }
 
 type User {
@@ -734,6 +747,7 @@ type User {
   password: String!
   links(where: LinkWhereInput, orderBy: LinkOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Link!]
   votes(where: VoteWhereInput, orderBy: VoteOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Vote!]
+  votesArticle(where: VoteArticleWhereInput, orderBy: VoteArticleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [VoteArticle!]
   articles(where: ArticleWhereInput, orderBy: ArticleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Article!]
 }
 
@@ -750,6 +764,7 @@ input UserCreateInput {
   password: String!
   links: LinkCreateManyWithoutPostedByInput
   votes: VoteCreateManyWithoutUserInput
+  votesArticle: VoteArticleCreateManyWithoutUserInput
   articles: ArticleCreateManyWithoutPostedByInput
 }
 
@@ -760,6 +775,11 @@ input UserCreateOneWithoutArticlesInput {
 
 input UserCreateOneWithoutLinksInput {
   create: UserCreateWithoutLinksInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutVotesArticleInput {
+  create: UserCreateWithoutVotesArticleInput
   connect: UserWhereUniqueInput
 }
 
@@ -775,6 +795,7 @@ input UserCreateWithoutArticlesInput {
   password: String!
   links: LinkCreateManyWithoutPostedByInput
   votes: VoteCreateManyWithoutUserInput
+  votesArticle: VoteArticleCreateManyWithoutUserInput
 }
 
 input UserCreateWithoutLinksInput {
@@ -782,6 +803,17 @@ input UserCreateWithoutLinksInput {
   name: String!
   email: String!
   password: String!
+  votes: VoteCreateManyWithoutUserInput
+  votesArticle: VoteArticleCreateManyWithoutUserInput
+  articles: ArticleCreateManyWithoutPostedByInput
+}
+
+input UserCreateWithoutVotesArticleInput {
+  id: ID
+  name: String!
+  email: String!
+  password: String!
+  links: LinkCreateManyWithoutPostedByInput
   votes: VoteCreateManyWithoutUserInput
   articles: ArticleCreateManyWithoutPostedByInput
 }
@@ -792,6 +824,7 @@ input UserCreateWithoutVotesInput {
   email: String!
   password: String!
   links: LinkCreateManyWithoutPostedByInput
+  votesArticle: VoteArticleCreateManyWithoutUserInput
   articles: ArticleCreateManyWithoutPostedByInput
 }
 
@@ -842,6 +875,7 @@ input UserUpdateInput {
   password: String
   links: LinkUpdateManyWithoutPostedByInput
   votes: VoteUpdateManyWithoutUserInput
+  votesArticle: VoteArticleUpdateManyWithoutUserInput
   articles: ArticleUpdateManyWithoutPostedByInput
 }
 
@@ -849,6 +883,13 @@ input UserUpdateManyMutationInput {
   name: String
   email: String
   password: String
+}
+
+input UserUpdateOneRequiredWithoutVotesArticleInput {
+  create: UserCreateWithoutVotesArticleInput
+  update: UserUpdateWithoutVotesArticleDataInput
+  upsert: UserUpsertWithoutVotesArticleInput
+  connect: UserWhereUniqueInput
 }
 
 input UserUpdateOneRequiredWithoutVotesInput {
@@ -882,12 +923,23 @@ input UserUpdateWithoutArticlesDataInput {
   password: String
   links: LinkUpdateManyWithoutPostedByInput
   votes: VoteUpdateManyWithoutUserInput
+  votesArticle: VoteArticleUpdateManyWithoutUserInput
 }
 
 input UserUpdateWithoutLinksDataInput {
   name: String
   email: String
   password: String
+  votes: VoteUpdateManyWithoutUserInput
+  votesArticle: VoteArticleUpdateManyWithoutUserInput
+  articles: ArticleUpdateManyWithoutPostedByInput
+}
+
+input UserUpdateWithoutVotesArticleDataInput {
+  name: String
+  email: String
+  password: String
+  links: LinkUpdateManyWithoutPostedByInput
   votes: VoteUpdateManyWithoutUserInput
   articles: ArticleUpdateManyWithoutPostedByInput
 }
@@ -897,6 +949,7 @@ input UserUpdateWithoutVotesDataInput {
   email: String
   password: String
   links: LinkUpdateManyWithoutPostedByInput
+  votesArticle: VoteArticleUpdateManyWithoutUserInput
   articles: ArticleUpdateManyWithoutPostedByInput
 }
 
@@ -908,6 +961,11 @@ input UserUpsertWithoutArticlesInput {
 input UserUpsertWithoutLinksInput {
   update: UserUpdateWithoutLinksDataInput!
   create: UserCreateWithoutLinksInput!
+}
+
+input UserUpsertWithoutVotesArticleInput {
+  update: UserUpdateWithoutVotesArticleDataInput!
+  create: UserCreateWithoutVotesArticleInput!
 }
 
 input UserUpsertWithoutVotesInput {
@@ -978,6 +1036,9 @@ input UserWhereInput {
   votes_every: VoteWhereInput
   votes_some: VoteWhereInput
   votes_none: VoteWhereInput
+  votesArticle_every: VoteArticleWhereInput
+  votesArticle_some: VoteArticleWhereInput
+  votesArticle_none: VoteArticleWhereInput
   articles_every: ArticleWhereInput
   articles_some: ArticleWhereInput
   articles_none: ArticleWhereInput
@@ -995,7 +1056,179 @@ type Vote {
   id: ID!
   link: Link!
   user: User!
+}
+
+type VoteArticle {
+  id: ID!
+  user: User!
   article: Article!
+}
+
+type VoteArticleConnection {
+  pageInfo: PageInfo!
+  edges: [VoteArticleEdge]!
+  aggregate: AggregateVoteArticle!
+}
+
+input VoteArticleCreateInput {
+  id: ID
+  user: UserCreateOneWithoutVotesArticleInput!
+  article: ArticleCreateOneWithoutVotesInput!
+}
+
+input VoteArticleCreateManyWithoutArticleInput {
+  create: [VoteArticleCreateWithoutArticleInput!]
+  connect: [VoteArticleWhereUniqueInput!]
+}
+
+input VoteArticleCreateManyWithoutUserInput {
+  create: [VoteArticleCreateWithoutUserInput!]
+  connect: [VoteArticleWhereUniqueInput!]
+}
+
+input VoteArticleCreateWithoutArticleInput {
+  id: ID
+  user: UserCreateOneWithoutVotesArticleInput!
+}
+
+input VoteArticleCreateWithoutUserInput {
+  id: ID
+  article: ArticleCreateOneWithoutVotesInput!
+}
+
+type VoteArticleEdge {
+  node: VoteArticle!
+  cursor: String!
+}
+
+enum VoteArticleOrderByInput {
+  id_ASC
+  id_DESC
+}
+
+type VoteArticlePreviousValues {
+  id: ID!
+}
+
+input VoteArticleScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  AND: [VoteArticleScalarWhereInput!]
+  OR: [VoteArticleScalarWhereInput!]
+  NOT: [VoteArticleScalarWhereInput!]
+}
+
+type VoteArticleSubscriptionPayload {
+  mutation: MutationType!
+  node: VoteArticle
+  updatedFields: [String!]
+  previousValues: VoteArticlePreviousValues
+}
+
+input VoteArticleSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: VoteArticleWhereInput
+  AND: [VoteArticleSubscriptionWhereInput!]
+  OR: [VoteArticleSubscriptionWhereInput!]
+  NOT: [VoteArticleSubscriptionWhereInput!]
+}
+
+input VoteArticleUpdateInput {
+  user: UserUpdateOneRequiredWithoutVotesArticleInput
+  article: ArticleUpdateOneRequiredWithoutVotesInput
+}
+
+input VoteArticleUpdateManyWithoutArticleInput {
+  create: [VoteArticleCreateWithoutArticleInput!]
+  delete: [VoteArticleWhereUniqueInput!]
+  connect: [VoteArticleWhereUniqueInput!]
+  set: [VoteArticleWhereUniqueInput!]
+  disconnect: [VoteArticleWhereUniqueInput!]
+  update: [VoteArticleUpdateWithWhereUniqueWithoutArticleInput!]
+  upsert: [VoteArticleUpsertWithWhereUniqueWithoutArticleInput!]
+  deleteMany: [VoteArticleScalarWhereInput!]
+}
+
+input VoteArticleUpdateManyWithoutUserInput {
+  create: [VoteArticleCreateWithoutUserInput!]
+  delete: [VoteArticleWhereUniqueInput!]
+  connect: [VoteArticleWhereUniqueInput!]
+  set: [VoteArticleWhereUniqueInput!]
+  disconnect: [VoteArticleWhereUniqueInput!]
+  update: [VoteArticleUpdateWithWhereUniqueWithoutUserInput!]
+  upsert: [VoteArticleUpsertWithWhereUniqueWithoutUserInput!]
+  deleteMany: [VoteArticleScalarWhereInput!]
+}
+
+input VoteArticleUpdateWithoutArticleDataInput {
+  user: UserUpdateOneRequiredWithoutVotesArticleInput
+}
+
+input VoteArticleUpdateWithoutUserDataInput {
+  article: ArticleUpdateOneRequiredWithoutVotesInput
+}
+
+input VoteArticleUpdateWithWhereUniqueWithoutArticleInput {
+  where: VoteArticleWhereUniqueInput!
+  data: VoteArticleUpdateWithoutArticleDataInput!
+}
+
+input VoteArticleUpdateWithWhereUniqueWithoutUserInput {
+  where: VoteArticleWhereUniqueInput!
+  data: VoteArticleUpdateWithoutUserDataInput!
+}
+
+input VoteArticleUpsertWithWhereUniqueWithoutArticleInput {
+  where: VoteArticleWhereUniqueInput!
+  update: VoteArticleUpdateWithoutArticleDataInput!
+  create: VoteArticleCreateWithoutArticleInput!
+}
+
+input VoteArticleUpsertWithWhereUniqueWithoutUserInput {
+  where: VoteArticleWhereUniqueInput!
+  update: VoteArticleUpdateWithoutUserDataInput!
+  create: VoteArticleCreateWithoutUserInput!
+}
+
+input VoteArticleWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  user: UserWhereInput
+  article: ArticleWhereInput
+  AND: [VoteArticleWhereInput!]
+  OR: [VoteArticleWhereInput!]
+  NOT: [VoteArticleWhereInput!]
+}
+
+input VoteArticleWhereUniqueInput {
+  id: ID
 }
 
 type VoteConnection {
@@ -1008,12 +1241,6 @@ input VoteCreateInput {
   id: ID
   link: LinkCreateOneWithoutVotesInput!
   user: UserCreateOneWithoutVotesInput!
-  article: ArticleCreateOneWithoutVotesInput!
-}
-
-input VoteCreateManyWithoutArticleInput {
-  create: [VoteCreateWithoutArticleInput!]
-  connect: [VoteWhereUniqueInput!]
 }
 
 input VoteCreateManyWithoutLinkInput {
@@ -1026,22 +1253,14 @@ input VoteCreateManyWithoutUserInput {
   connect: [VoteWhereUniqueInput!]
 }
 
-input VoteCreateWithoutArticleInput {
-  id: ID
-  link: LinkCreateOneWithoutVotesInput!
-  user: UserCreateOneWithoutVotesInput!
-}
-
 input VoteCreateWithoutLinkInput {
   id: ID
   user: UserCreateOneWithoutVotesInput!
-  article: ArticleCreateOneWithoutVotesInput!
 }
 
 input VoteCreateWithoutUserInput {
   id: ID
   link: LinkCreateOneWithoutVotesInput!
-  article: ArticleCreateOneWithoutVotesInput!
 }
 
 type VoteEdge {
@@ -1099,18 +1318,6 @@ input VoteSubscriptionWhereInput {
 input VoteUpdateInput {
   link: LinkUpdateOneRequiredWithoutVotesInput
   user: UserUpdateOneRequiredWithoutVotesInput
-  article: ArticleUpdateOneRequiredWithoutVotesInput
-}
-
-input VoteUpdateManyWithoutArticleInput {
-  create: [VoteCreateWithoutArticleInput!]
-  delete: [VoteWhereUniqueInput!]
-  connect: [VoteWhereUniqueInput!]
-  set: [VoteWhereUniqueInput!]
-  disconnect: [VoteWhereUniqueInput!]
-  update: [VoteUpdateWithWhereUniqueWithoutArticleInput!]
-  upsert: [VoteUpsertWithWhereUniqueWithoutArticleInput!]
-  deleteMany: [VoteScalarWhereInput!]
 }
 
 input VoteUpdateManyWithoutLinkInput {
@@ -1135,24 +1342,12 @@ input VoteUpdateManyWithoutUserInput {
   deleteMany: [VoteScalarWhereInput!]
 }
 
-input VoteUpdateWithoutArticleDataInput {
-  link: LinkUpdateOneRequiredWithoutVotesInput
-  user: UserUpdateOneRequiredWithoutVotesInput
-}
-
 input VoteUpdateWithoutLinkDataInput {
   user: UserUpdateOneRequiredWithoutVotesInput
-  article: ArticleUpdateOneRequiredWithoutVotesInput
 }
 
 input VoteUpdateWithoutUserDataInput {
   link: LinkUpdateOneRequiredWithoutVotesInput
-  article: ArticleUpdateOneRequiredWithoutVotesInput
-}
-
-input VoteUpdateWithWhereUniqueWithoutArticleInput {
-  where: VoteWhereUniqueInput!
-  data: VoteUpdateWithoutArticleDataInput!
 }
 
 input VoteUpdateWithWhereUniqueWithoutLinkInput {
@@ -1163,12 +1358,6 @@ input VoteUpdateWithWhereUniqueWithoutLinkInput {
 input VoteUpdateWithWhereUniqueWithoutUserInput {
   where: VoteWhereUniqueInput!
   data: VoteUpdateWithoutUserDataInput!
-}
-
-input VoteUpsertWithWhereUniqueWithoutArticleInput {
-  where: VoteWhereUniqueInput!
-  update: VoteUpdateWithoutArticleDataInput!
-  create: VoteCreateWithoutArticleInput!
 }
 
 input VoteUpsertWithWhereUniqueWithoutLinkInput {
@@ -1200,7 +1389,6 @@ input VoteWhereInput {
   id_not_ends_with: ID
   link: LinkWhereInput
   user: UserWhereInput
-  article: ArticleWhereInput
   AND: [VoteWhereInput!]
   OR: [VoteWhereInput!]
   NOT: [VoteWhereInput!]

@@ -1,3 +1,5 @@
+scalar DateTime
+
 type Query {
   feedArticles(filter: String, skip: Int, first: Int, orderBy: ArticleOrderByInput): FeedArticles!
   feedLinks(filter: String, skip: Int, first: Int, orderBy: LinkOrderByInput): FeedLinks!
@@ -19,6 +21,7 @@ type Mutation {
   signup(email: String!, password: String!, name: String!): AuthPayload
   login(email: String!, password: String!): AuthPayload
   vote(linkId: ID!): Vote
+  voteArticle(articleId: ID!): VoteArticle
 }
 
 type Article {
@@ -29,7 +32,7 @@ type Article {
   topic: String!
   createdAt: DateTime!
   postedBy: User
-  votes: [Vote!]!
+  votes: [VoteArticle!]!
 }
 
 type Link {
@@ -62,6 +65,11 @@ type Subscription {
 type Vote {
   id: ID!
   link: Link!
+  user: User!
+}
+
+type VoteArticle {
+  id: ID!
   user: User!
   article: Article!
 }

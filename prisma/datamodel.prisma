@@ -14,12 +14,18 @@ type User {
   password: String!
   links: [Link!]!
   votes: [Vote!]!
+  votesArticle: [VoteArticle!]!
   articles: [Article!]!
 }
 
 type Vote {
   id: ID! @id
   link: Link!
+  user: User!
+}
+
+type VoteArticle {
+  id: ID! @id
   user: User!
   article: Article!
 }
@@ -32,5 +38,5 @@ type Article {
   topic: String!
   createdAt: DateTime! @createdAt
   postedBy: User
-  votes: [Vote!]!
+  votes: [VoteArticle!]!
 }

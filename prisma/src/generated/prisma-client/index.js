@@ -17,6 +17,10 @@ var models = [
     embedded: false
   },
   {
+    name: "VoteArticle",
+    embedded: false
+  },
+  {
     name: "Article",
     embedded: false
   }

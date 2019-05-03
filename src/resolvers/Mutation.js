@@ -58,7 +58,7 @@ function postArticle (parent, args, context, info) {
 
 async function voteArticle (parent, args, context, info) {
   const userId = getUserId(context)
-  const articleExists = await context.prisma.$exists.vote({
+  const articleExists = await context.prisma.$exists.voteArticle({
     user: { id: userId },
     article: { id: args.articleId },
   })
@@ -67,7 +67,7 @@ async function voteArticle (parent, args, context, info) {
     throw new Error(`Already voted for link: ${args.articleId}`)
   }
 
-  return context.prisma.createVote({
+  return context.prisma.createVoteArticle({
     user: { connect: { id: userId } },
     article: { connect: { id: args.articleId } },
   })
