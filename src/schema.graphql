@@ -3,6 +3,7 @@ scalar DateTime
 type Query {
   feedArticles(filter: String, skip: Int, first: Int, orderBy: ArticleOrderByInput): FeedArticles!
   feedLinks(filter: String, skip: Int, first: Int, orderBy: LinkOrderByInput): FeedLinks!
+  feedUser(filter: String): FeedUser!
 }
 
 type FeedArticles {
@@ -13,6 +14,10 @@ type FeedArticles {
 type FeedLinks {
   links: [Link!]!
   count: Int!
+}
+
+type FeedUser {
+  user: User!
 }
 
 type Mutation {

@@ -57,7 +57,19 @@ async function feedArticles (parent, args, context, info) {
   }
 }
 
+async function feedUser (parent, args, context, info) {
+  const id = args.filter;
+  const user = await context.prisma.user({
+    id
+  })
+
+  return {
+    user
+  }
+}
+
 module.exports = {
   feedLinks,
-  feedArticles
+  feedArticles,
+  feedUser
 }
